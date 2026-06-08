@@ -1,0 +1,30 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+staticfiles/
+
+# Environment
+.env
+.venv/
+venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+
+# Mac / OS junk
+.DS_Store
+
+# Pytest / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Migrations (optional - uncomment if you DON'T want to track them)
+# **/migrations/*.pyc
+# **/migrations/__pycache__/

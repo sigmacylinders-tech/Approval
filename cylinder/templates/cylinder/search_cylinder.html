@@ -1,0 +1,241 @@
+<head> <meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+
+<h2 class="page-title">Search Cylinder</h2>
+
+<div class="container">
+
+    <!-- Search Form -->
+    <div class="card">
+        <form method="get" class="search-form">
+
+            <input
+                type="text"
+                name="serial_number"
+                value="{{ serial_number }}"
+                placeholder="Enter serial number..."
+                required
+            >
+
+            <button type="submit">Search</button>
+
+        </form>
+    </div>
+
+    <!-- Results -->
+    {% if serial_number %}
+
+        {% if cylinder %}
+
+            <!-- ✅ Professional Result Card -->
+            <div class="card">
+                <h3 class="section-title">Cylinder Details</h3>
+
+                <div class="info-row">
+                    <span class="label">Serial Number</span>
+                    <span class="value">{{ cylinder.serial_number }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Project</span>
+                    <span class="value">{{ cylinder.batch.project_name }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Size</span>
+                    <span class="value">{{ cylinder.batch.project_size }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Date</span>
+                    <span class="value">{{ cylinder.batch.cylinder_date }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Status</span>
+                    <span class="value">
+                        {% if cylinder.batch.status == "PENDING" %}
+                            <span class="badge pending">Pending</span>
+                        {% else %}
+                            <span class="badge signed">Signed</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Approved By</span>
+                    <span class="value">
+                        {% if cylinder.batch.approved_by %}
+                            {{ cylinder.batch.approved_by.get_full_name|default:cylinder.batch.approved_by.username }}
+                        {% else %}
+                            <span class="text-muted">Not Approved Yet</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <!-- No Result -->
+            <div class="card">
+                <p class="not-found">No cylinder found.</p>
+            </div>
+
+        {% endif %}
+
+    {% endif %}
+
+    <!-- ✅ FIXED Back Button -->
+    <div class="actions">
+        <a href="{% url 'index' %}" class="btn-secondary">
+            ← Back Home
+        </a>
+    </div>
+
+</div>
+
+
+<!-- ✅ Styles -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .page-title {
+        margin-bottom: 20px;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: auto;
+        padding: 10px;
+    }
+
+    /* Cards */
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+    }
+
+    /* Search Form */
+    .search-form {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .search-form input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .search-form input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .search-form button {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    .search-form button:hover {
+        background-color: #0056b3;
+    }
+
+    /* ✅ Professional Result Layout */
+    .section-title {
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .value {
+        text-align: right;
+        color: #222;
+    }
+
+    /* Badge */
+    .badge {
+        padding: 4px 8px;
+        border-radius: 5px;
+        color: white;
+        font-size: 12px;
+    }
+
+    .pending {
+        background-color: orange;
+    }
+
+    .signed {
+        background-color: green;
+    }
+
+    /* Text */
+    .text-muted {
+        color: gray;
+    }
+
+    .not-found {
+        color: red;
+        font-weight: bold;
+    }
+
+    /* Buttons */
+    .btn-secondary {
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        background-color: #6c757d;
+        color: white;
+        display: inline-block;
+    }
+
+    .actions {
+        margin-top: 10px;
+    }
+
+    /* ✅ Mobile */
+    @media (max-width: 600px) {
+
+        .search-form {
+            flex-direction: column;
+        }
+
+        .search-form button {
+            width: 100%;
+        }
+
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+        }
+
+        .value {
+            text-align: left;
+        }
+
+        .btn-secondary
+    }
+</style>

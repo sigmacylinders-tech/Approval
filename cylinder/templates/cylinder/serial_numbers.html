@@ -1,0 +1,111 @@
+<head> <meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+
+<h2 class="page-title">Enter Serial Numbers</h2>
+
+<div class="container">
+
+    <form method="post" action="{% url 'save_approval_batch' %}">
+        {% csrf_token %}
+
+        <div class="serial-grid">
+            {% for i in ""|center:count %}
+                <div class="serial-item">
+                    <label>Serial Number {{ forloop.counter }}</label>
+
+                    <input
+                        type="text"
+                        name="serial_numbers"
+                        required
+                        placeholder="Enter serial..."
+                    >
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-primary">
+            Save
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ✅ Styles -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .page-title {
+        margin-bottom: 20px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 10px;
+    }
+
+    /* Grid Layout */
+    .serial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .serial-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .serial-item label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    /* Input */
+    input {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Button */
+    .btn-primary {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* ✅ Mobile Optimization */
+    @media (max-width: 600px) {
+
+        .page-title {
+            font-size: 20px;
+        }
+
+        .serial-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+    }
+</style>

@@ -1,0 +1,106 @@
+<head> <meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<h2 style="margin-bottom: 20px;">Create Approval Batch</h2>
+
+<div class="form-container">
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Form Fields -->
+        <div class="form-fields">
+            {{ form.as_p }}
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                Next →
+            </button>
+
+            <a href="{% url 'index' %}" class="btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Styles -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .form-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+
+    .form-fields p {
+        margin-bottom: 15px;
+    }
+
+    /* Inputs */
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-top: 5px;
+        box-sizing: border-box;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Buttons container */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        padding: 10px;
+        border-radius: 6px;
+        background-color: #6c757d;
+        color: white;
+    }
+
+    /* ✅ Mobile Optimization */
+    @media (max-width: 600px) {
+        .form-container {
+            padding: 15px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-primary,
+        .btn-secondary
+    }
+</style>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: block;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: white;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #111;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="title">Approvals</div>
+        <div class="subtitle">Select an action</div>
+
+        <a class="btn" href="{% url 'create_approval_batch' %}">
+            Create Approval Batches
+        </a>
+
+        <a class="btn" href="{% url 'batch_list' %}">
+            Batches
+        </a>
+
+        <a class="btn" href="{% url 'search_cylinder' %}">
+            Cylinder Search
+        </a>
+
+    </div>
+</body>
+</html>

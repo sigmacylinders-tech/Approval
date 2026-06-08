@@ -1,0 +1,181 @@
+<head> <meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+
+<h2 class="page-title">Sign Batch</h2>
+
+<div class="container">
+
+    <!-- Batch Info -->
+    <div class="card">
+        <p><strong>Project:</strong> {{ batch.project_name }}</p>
+        <p><strong>Size:</strong> {{ batch.project_size }}</p>
+        <p><strong>Date:</strong> {{ batch.cylinder_date }}</p>
+    </div>
+
+    <!-- Cylinders -->
+    <div class="card">
+        <h3>Cylinders</h3>
+
+        <div class="cylinder-list">
+            {% for c in batch.cylinders.all %}
+                <div class="cylinder-item">
+                    {{ c.serial_number }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Error -->
+    {% if error %}
+        <div class="error-box">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <!-- Form -->
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Manager Token</label>
+                <input type="password" name="token" required>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Approve Batch
+            </button>
+        </form>
+    </div>
+
+    <!-- Cancel -->
+    <div class="actions">
+        <a href="{% url 'batch_list' %}" class="btn-secondary">
+            ← Cancel
+        </a>
+    </div>
+
+</div>
+
+
+<!-- ✅ Styles -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .page-title {
+        margin-bottom: 20px;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: auto;
+        padding: 10px;
+    }
+
+    /* Card */
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+    }
+
+    /* Cylinders */
+    .cylinder-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .cylinder-item {
+        padding: 8px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    /* Form */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        background-color: #28a745;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-primary:hover {
+        background-color: #218838;
+    }
+
+    .btn-secondary {
+        display: inline-block;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .actions {
+        margin-top: 10px;
+    }
+
+    /* Error */
+    .error-box {
+        padding: 10px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+
+    /* ✅ Mobile Responsive */
+    @media (max-width: 600px) {
+
+        .page-title {
+            font-size: 20px;
+        }
+
+        .container {
+            padding: 5px;
+        }
+
+        .card {
+            padding: 12px;
+        }
+
+        .cylinder-item {
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .btn-secondary
+    }
+</style>

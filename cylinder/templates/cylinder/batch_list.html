@@ -1,0 +1,210 @@
+<head> <meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+
+<h2 class="page-title">Approval Batches</h2>
+
+<!-- Filter Card -->
+<div class="filter-card">
+    <form method="get" class="filter-form">
+        <label><strong>Filter by Date:</strong></label>
+
+        <input type="date"
+               name="date"
+               value="{{ selected_date }}">
+
+        <button type="submit">Filter</button>
+    </form>
+</div>
+
+<!-- Table Wrapper (important for mobile scroll) -->
+<div class="table-wrapper">
+    <table class="batch-table">
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Size</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Cylinders</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for batch in batches %}
+            <tr>
+                <td>{{ batch.project_name }}</td>
+                <td>{{ batch.project_size }}</td>
+                <td>{{ batch.cylinder_date }}</td>
+
+                <!-- Status -->
+                <td>
+                    {% if batch.status == "PENDING" %}
+                        <span class="badge pending">Pending</span>
+                    {% else %}
+                        <span class="badge signed">Signed</span>
+                    {% endif %}
+                </td>
+
+                <td class="center">
+                    {{ batch.cylinders.count }}
+                </td>
+
+                <!-- Action -->
+                <td>
+                    {% if batch.status == "PENDING" %}
+                        <a href="{% url 'sign_batch' batch.id %}" class="btn-success">
+                            Sign
+                        </a>
+                    {% else %}
+                        <span class="text-muted">Signed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Back Button -->
+<div class="bottom-actions">
+    <a href="{% url 'index' %}" class="btn-secondary">
+        ← Back Home
+    </a>
+</div>
+
+
+<!-- ✅ Styles -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .page-title {
+        margin-bottom: 20px;
+    }
+
+    /* Filter Card */
+    .filter-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        margin-bottom: 20px;
+        max-width: 100%;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-form input {
+        padding: 6px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .filter-form button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    /* Table */
+    .table-wrapper {
+        overflow-x: auto; /* ✅ key for mobile */
+    }
+
+    .batch-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px; /* prevents squishing */
+    }
+
+    .batch-table th {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .batch-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .batch-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 4px 8px;
+        border-radius: 5px;
+        color: white;
+        font-size: 12px;
+    }
+
+    .pending {
+        background-color: orange;
+    }
+
+    .signed {
+        background-color: green;
+    }
+
+    /* Buttons */
+    .btn-success {
+        padding: 6px 10px;
+        background-color: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .btn-secondary {
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .bottom-actions {
+        margin-top: 20px;
+    }
+
+    .text-muted {
+        color: gray;
+    }
+
+    /* ✅ MOBILE OPTIMIZATION */
+    @media (max-width: 600px) {
+
+        .page-title {
+            font-size: 20px;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-form button {
+            width: 100%;
+        }
+
+        .filter-form input {
+            width: 100%;
+        }
+    }
+</style>
