@@ -1,12 +1,31 @@
 from datetime import date
 
+from django.db import IntegrityError, transaction
+from django.db.models.functions import Lower
 from django.shortcuts import render, redirect, get_object_or_404
+
 from .forms import ApprovalBatchForm
 from .models import Cylinder, ApprovalBatch, ManagerToken
 
 
 def index(request):
     return render(request, "cylinder/index.html")
+
+
+def _render_serial_page(request, count, serials=None, errors=None):
+    serials = list(serials or [])
+    # pad so the template always shows `count` inputs, keeping what was typed
+    serials += [""] * (count - len(serials))
+
+    return render(
+        request,
+        "cylinder/serial_numbers.html",
+        {
+            "count": count,
+            "serials": serials,
+            "errors": errors or [],
+        },
+    )
 
 
 def create_approval_batch(request):
@@ -22,14 +41,12 @@ def create_approval_batch(request):
                 "cylinder_date": str(
                     form.cleaned_data["cylinder_date"]
                 ),
+                "cylinder_count": form.cleaned_data["cylinder_count"],
             }
 
-            return render(
+            return _render_serial_page(
                 request,
-                "cylinder/serial_numbers.html",
-                {
-                    "count": form.cleaned_data["cylinder_count"]
-                },
+                form.cleaned_data["cylinder_count"],
             )
 
     else:
@@ -43,6 +60,7 @@ def create_approval_batch(request):
         },
     )
 
+
 def save_approval_batch(request):
 
     if request.method != "POST":
@@ -53,30 +71,85 @@ def save_approval_batch(request):
     if not batch_data:
         return redirect("create_approval_batch")
 
-    batch = ApprovalBatch.objects.create(
-        project_name=batch_data["project_name"],
-        project_size=batch_data["project_size"],
-        cylinder_date=batch_data["cylinder_date"],
-    )
+    project_name = batch_data["project_name"]
 
-    serial_numbers = request.POST.getlist(
-        "serial_numbers"
-    )
-
-    cylinders = [
-        Cylinder(
-            batch=batch,
-            serial_number=serial.strip()
-        )
-        for serial in serial_numbers
-        if serial.strip()
+    serial_numbers = [
+        serial.strip()
+        for serial in request.POST.getlist("serial_numbers")
     ]
+    count = batch_data.get("cylinder_count", len(serial_numbers))
+    filled = [serial for serial in serial_numbers if serial]
 
-    Cylinder.objects.bulk_create(cylinders)
+    errors = []
+
+    if not filled:
+        errors.append("Please enter at least one serial number.")
+
+    # 1. duplicates inside what was just typed
+    seen = set()
+    repeated = set()
+    for serial in filled:
+        key = serial.lower()
+        if key in seen:
+            repeated.add(serial)
+        seen.add(key)
+
+    if repeated:
+        errors.append(
+            "Entered more than once: " + ", ".join(sorted(repeated))
+        )
+
+    # 2. serials already registered in this project
+    existing = list(
+        Cylinder.objects
+        .annotate(serial_lower=Lower("serial_number"))
+        .filter(
+            project_name__iexact=project_name,
+            serial_lower__in=seen,
+        )
+        .values_list("serial_number", flat=True)
+    )
+
+    if existing:
+        errors.append(
+            f"Already registered in project {project_name}: "
+            + ", ".join(sorted(existing))
+        )
+
+    if errors:
+        return _render_serial_page(request, count, serial_numbers, errors)
+
+    # 3. create everything together; the DB constraint is the final safety net
+    try:
+        with transaction.atomic():
+            batch = ApprovalBatch.objects.create(
+                project_name=project_name,
+                project_size=batch_data["project_size"],
+                cylinder_date=batch_data["cylinder_date"],
+            )
+
+            Cylinder.objects.bulk_create([
+                Cylinder(
+                    batch=batch,
+                    project_name=batch.project_name,  # bulk_create skips save()
+                    serial_number=serial,
+                )
+                for serial in filled
+            ])
+
+    except IntegrityError:
+        return _render_serial_page(
+            request,
+            count,
+            serial_numbers,
+            ["One of these serial numbers was just registered in this "
+             "project by someone else. Please check and try again."],
+        )
 
     del request.session["batch_data"]
 
     return redirect("index")
+
 
 def batch_list(request):
 
@@ -99,6 +172,7 @@ def batch_list(request):
             "selected_date": selected_date or date.today()
         }
     )
+
 
 def sign_batch(request, pk):
 
@@ -136,9 +210,11 @@ def sign_batch(request, pk):
         "cylinder/sign_batch.html",
         {"batch": batch}
     )
+
+
 def search_cylinder(request):
 
-    cylinder = None
+    cylinders = []
 
     serial_number = request.GET.get(
         "serial_number",
@@ -146,23 +222,23 @@ def search_cylinder(request):
     ).strip()
 
     if serial_number:
-        cylinder = (
+        cylinders = (
             Cylinder.objects
             .select_related(
                 "batch",
                 "batch__approved_by"
             )
             .filter(
-                serial_number=serial_number
+                serial_number__iexact=serial_number
             )
-            .first()
+            .order_by("project_name", "-batch__cylinder_date")
         )
 
     return render(
         request,
         "cylinder/search_cylinder.html",
         {
-            "cylinder": cylinder,
+            "cylinders": cylinders,
             "serial_number": serial_number,
         }
     )

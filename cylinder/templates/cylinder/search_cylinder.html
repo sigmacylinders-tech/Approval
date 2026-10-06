@@ -24,7 +24,15 @@
     <!-- Results -->
     {% if serial_number %}
 
-        {% if cylinder %}
+        {% with total=cylinders|length %}
+            {% if total > 1 %}
+                <div class="multi-notice">
+                    This serial number exists in {{ total }} projects.
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% for cylinder in cylinders %}
 
             <!-- ✅ Professional Result Card -->
             <div class="card">
@@ -74,14 +82,14 @@
 
             </div>
 
-        {% else %}
+        {% empty %}
 
             <!-- No Result -->
             <div class="card">
                 <p class="not-found">No cylinder found.</p>
             </div>
 
-        {% endif %}
+        {% endfor %}
 
     {% endif %}
 
@@ -118,6 +126,17 @@
         padding: 15px;
         margin-bottom: 15px;
         background-color: #f9f9f9;
+    }
+
+    /* Multiple results notice */
+    .multi-notice {
+        background-color: #e8f1fd;
+        border: 1px solid #b6d4fe;
+        color: #084298;
+        border-radius: 6px;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        font-weight: bold;
     }
 
     /* Search Form */
@@ -236,6 +255,9 @@
             text-align: left;
         }
 
-        .btn-secondary
+        .btn-secondary {
+            display: block;
+            text-align: center;
+        }
     }
 </style>
